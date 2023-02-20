@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="rahman.tabular">
+    package="com.example.tabular">
    <application
         android:label="tabular"
         android:name="${applicationName}"

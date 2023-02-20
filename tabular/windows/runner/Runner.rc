@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "rahman" "\0"
+            VALUE "CompanyName", "com.example" "\0"
             VALUE "FileDescription", "tabular" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "tabular" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 rahman. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "tabular.exe" "\0"
             VALUE "ProductName", "tabular" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
