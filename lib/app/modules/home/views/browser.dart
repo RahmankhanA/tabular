@@ -11,25 +11,21 @@ class Browser extends StatefulWidget {
   const Browser({super.key});
 
   @override
-  _BrowserState createState() =>
-      _BrowserState();
+  _BrowserState createState() => _BrowserState();
 }
 
 class _BrowserState extends State<Browser> {
   final GlobalKey webViewKey = GlobalKey();
 
-
   InAppWebViewGroupOptions settings = InAppWebViewGroupOptions(
       crossPlatform:
           InAppWebViewOptions(mediaPlaybackRequiresUserGesture: true));
 
-
   PullToRefreshController? pullToRefreshController;
-HomeController homeController=Get.find<HomeController>();
+  HomeController homeController = Get.find<HomeController>();
   late ContextMenu contextMenu;
   String url = "";
   double progress = 0;
-
 
   @override
   void initState() {
@@ -41,7 +37,8 @@ HomeController homeController=Get.find<HomeController>();
               title: "Special",
               action: () async {
                 print("Menu item Special clicked!");
-                print(await homeController.webViewController?.getSelectedText());
+                print(
+                    await homeController.webViewController?.getSelectedText());
                 await homeController.webViewController?.clearFocus();
               })
         ],
@@ -74,8 +71,8 @@ HomeController homeController=Get.find<HomeController>();
               } else if (defaultTargetPlatform == TargetPlatform.iOS ||
                   defaultTargetPlatform == TargetPlatform.macOS) {
                 homeController.webViewController?.loadUrl(
-                    urlRequest:
-                        URLRequest(url: await homeController.webViewController?.getUrl()));
+                    urlRequest: URLRequest(
+                        url: await homeController.webViewController?.getUrl()));
               }
             },
           );
@@ -89,101 +86,100 @@ HomeController homeController=Get.find<HomeController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
         body: SafeArea(
             child: Column(children: <Widget>[
+      Expanded(
+        child: Stack(
+          children: [
+            InAppWebView(
+              key: webViewKey,
+              initialUrlRequest:
+                  URLRequest(url: Uri.parse('https://duckduckgo.com/?q=')),
+              // initialUrlRequest:
+              // URLRequest(url: WebUri(Uri.base.toString().replaceFirst("/#/", "/") + 'page.html')),
+              // initialFile: "assets/index.html",
+              initialUserScripts: UnmodifiableListView<UserScript>([]),
+              initialOptions: settings,
+              // contextMenu: contextMenu,
+              pullToRefreshController: pullToRefreshController,
+              onWebViewCreated: (controller) async {
+                homeController.webViewController = controller;
+                print(await controller.getUrl());
+              },
+              onLoadStart: (controller, url) async {
+                setState(() {
+                  this.url = url.toString();
+                  homeController.searchController.text = this.url;
+                });
+              },
+              androidOnPermissionRequest: (controller, request, data) async {
+                return PermissionRequestResponse(
+                    resources: data,
+                    action: PermissionRequestResponseAction.GRANT);
+              },
+              shouldOverrideUrlLoading: (controller, navigationAction) async {
+                var uri = navigationAction.request.url!;
 
-          Expanded(
-            child: Stack(
-              children: [
-                InAppWebView(
-                  key: webViewKey,
-                  initialUrlRequest:
-                      URLRequest(url: Uri.parse('https://duckduckgo.com/?q=')),
-                  // initialUrlRequest:
-                  // URLRequest(url: WebUri(Uri.base.toString().replaceFirst("/#/", "/") + 'page.html')),
-                  // initialFile: "assets/index.html",
-                  initialUserScripts: UnmodifiableListView<UserScript>([]),
-                  initialOptions: settings,
-                  // contextMenu: contextMenu,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (controller) async {
-                    homeController.webViewController = controller;
-                    print(await controller.getUrl());
-                  },
-                  onLoadStart: (controller, url) async {
-                    setState(() {
-                      this.url = url.toString();
-                      homeController.searchController.text = this.url;
-                    });
-                  },
-                  androidOnPermissionRequest:
-                      (controller, request, data) async {
-                    return PermissionRequestResponse(
-                        resources: data,
-                        action: PermissionRequestResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
+                if (![
+                  "http",
+                  "https",
+                  "file",
+                  "chrome",
+                  "data",
+                  "javascript",
+                  "about"
+                ].contains(uri.scheme)) {
+                  if (await canLaunchUrl(uri)) {
+                    // Launch the App
+                    await launchUrl(
+                      uri,
+                    );
+                    // and cancel the request
+                    return NavigationActionPolicy.CANCEL;
+                  }
+                }
 
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunchUrl(uri)) {
-                        // Launch the App
-                        await launchUrl(
-                          uri,
-                        );
-                        // and cancel the request
-                        return NavigationActionPolicy.CANCEL;
-                      }
-                    }
-
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    pullToRefreshController?.endRefreshing();
-                    setState(() {
-                      this.url = url.toString();
-                      homeController.searchController.text = this.url;
-                    });
-                  },
-                  onLoadError: (controller, request, count, error) {
-                    pullToRefreshController?.endRefreshing();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {
-                      pullToRefreshController?.endRefreshing();
-                    }
-                    setState(() {
-                      this.progress = progress / 100;
-                      homeController.searchController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory: (controller, url, isReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      homeController.searchController.text = this.url;
-                    });
-                  },
-                  onConsoleMessage: (controller, consoleMessage) {
-                    print(consoleMessage);
-                  },
-                ),
-                progress < 1.0
-                    ? LinearProgressIndicator(value: progress)
-                    : Container(),
-              ],
+                return NavigationActionPolicy.ALLOW;
+              },
+              onLoadStop: (controller, url) async {
+                pullToRefreshController?.endRefreshing();
+                setState(() {
+                  this.url = url.toString();
+                  homeController.searchController.text = this.url;
+                });
+              },
+              onLoadError: (controller, request, count, error) {
+                pullToRefreshController?.endRefreshing();
+              },
+              onProgressChanged: (controller, progress) {
+                if (progress == 100) {
+                  pullToRefreshController?.endRefreshing();
+                }
+                setState(() {
+                  this.progress = progress / 100;
+                  homeController.searchController.text = url;
+                });
+              },
+              onUpdateVisitedHistory: (controller, url, isReload) {
+                setState(() {
+                  this.url = url.toString();
+                  homeController.searchController.text = this.url;
+                });
+              },
+              onConsoleMessage: (controller, consoleMessage) {
+                print(consoleMessage);
+              },
             ),
-          ),
-
-        ])));
+            progress < 1.0
+                ? LinearProgressIndicator(
+                    value: progress,
+                    color: const Color.fromARGB(255, 38, 67, 226),
+                    backgroundColor: Colors.black,
+                  )
+                : Container(),
+          ],
+        ),
+      ),
+    ])));
   }
 }
