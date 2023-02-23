@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
+import 'package:tabular/app/modules/home/views/browser.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -8,12 +10,17 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
-        child: Text(
-          'HomeView is working',
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
+      body: WillPopScope(
+          onWillPop: () async {
+            if (controller.webViewController != null) {
+              if (await controller.webViewController!.canGoBack()) {
+                controller.webViewController!.goBack();
+                return false;
+              }
+            }
+            return true;
+          },
+          child: const Browser()),
       bottomSheet: Container(
         color: const Color.fromARGB(230, 14, 11, 11),
         height: 50,
@@ -31,6 +38,14 @@ class HomeView extends GetView<HomeController> {
                 child: TextFormField(
                   controller: controller.searchController,
                   textInputAction: TextInputAction.go,
+                  onFieldSubmitted: (value) {
+                    var url = Uri.parse(value);
+                    if (url.scheme.isEmpty) {
+                      url = Uri.parse(("https://duckduckgo.com/?q=") + value);
+                    }
+                    controller.webViewController
+                        ?.loadUrl(urlRequest: URLRequest(url: url));
+                  },
                   decoration: const InputDecoration(
                       prefixIcon: Icon(
                         Icons.search_sharp,
@@ -56,7 +71,7 @@ class HomeView extends GetView<HomeController> {
               constraints: const BoxConstraints(minWidth: 25.0),
               child: Center(
                   child: Text(
-                5.toString(),
+                1.toString(),
                 style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
