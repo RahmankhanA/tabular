@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,7 @@ class _BrowserState extends State<Browser> {
   PullToRefreshController? pullToRefreshController;
   HomeController homeController = Get.find<HomeController>();
   late ContextMenu contextMenu;
-  String url = "";
-  double progress = 0;
+
 
   @override
   void initState() {
@@ -49,11 +49,11 @@ class _BrowserState extends State<Browser> {
           print(await homeController.webViewController?.getSelectedText());
         },
         onHideContextMenu: () {
-          print("onHideContextMenu");
+          log("onHideContextMenu");
         },
         onContextMenuActionItemClicked: (contextMenuItemClicked) async {
           var id = contextMenuItemClicked.androidId;
-          print(
+          log(
               "onContextMenuActionItemClicked: $id ${contextMenuItemClicked.title}");
         });
 
@@ -94,7 +94,7 @@ class _BrowserState extends State<Browser> {
             InAppWebView(
               key: webViewKey,
               initialUrlRequest:
-                  URLRequest(url: Uri.parse('https://duckduckgo.com/?q=')),
+                  URLRequest(url: Uri.parse('https://google.com/')),
               // initialUrlRequest:
               // URLRequest(url: WebUri(Uri.base.toString().replaceFirst("/#/", "/") + 'page.html')),
               // initialFile: "assets/index.html",
@@ -107,10 +107,15 @@ class _BrowserState extends State<Browser> {
                 print(await controller.getUrl());
               },
               onLoadStart: (controller, url) async {
-                setState(() {
-                  this.url = url.toString();
-                  homeController.searchController.text = this.url;
-                });
+                // setState(() async{
+                  homeController.url.value = url.toString();
+                  homeController.isUrlsafe.value =await homeController.webViewController!.isSecureContext();
+                  var data2=await homeController.webViewController!.getCertificate();
+                log("is url safe ${homeController.isUrlsafe}");
+                  // log("is url certificates safe $data2");
+                  homeController.searchController.text = homeController.url.value;
+
+                // });
               },
               androidOnPermissionRequest: (controller, request, data) async {
                 return PermissionRequestResponse(
@@ -143,10 +148,11 @@ class _BrowserState extends State<Browser> {
               },
               onLoadStop: (controller, url) async {
                 pullToRefreshController?.endRefreshing();
-                setState(() {
-                  this.url = url.toString();
-                  homeController.searchController.text = this.url;
-                });
+                // setState(() {
+                  homeController.url.value = url.toString();
+                  homeController.searchController.text = homeController.url.value;
+                // });
+
               },
               onLoadError: (controller, request, count, error) {
                 pullToRefreshController?.endRefreshing();
@@ -155,28 +161,22 @@ class _BrowserState extends State<Browser> {
                 if (progress == 100) {
                   pullToRefreshController?.endRefreshing();
                 }
-                setState(() {
-                  this.progress = progress / 100;
-                  homeController.searchController.text = url;
-                });
+                // setState(() {
+                  homeController.progress.value = progress / 100;
+                  homeController.searchController.text = homeController. url.value;
+                // });
               },
               onUpdateVisitedHistory: (controller, url, isReload) {
-                setState(() {
-                  this.url = url.toString();
-                  homeController.searchController.text = this.url;
-                });
+                // setState(() {
+                  homeController.url.value = url.toString();
+                  homeController.searchController.text = homeController.url.value;
+                // });
               },
               onConsoleMessage: (controller, consoleMessage) {
                 print(consoleMessage);
               },
             ),
-            progress < 1.0
-                ? LinearProgressIndicator(
-                    value: progress,
-                    color: const Color.fromARGB(255, 38, 67, 226),
-                    backgroundColor: Colors.black,
-                  )
-                : Container(),
+        
           ],
         ),
       ),
