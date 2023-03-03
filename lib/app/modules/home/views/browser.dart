@@ -110,9 +110,8 @@ class _BrowserState extends State<Browser> {
                 // setState(() async{
                   homeController.url.value = url.toString();
                   homeController.isUrlsafe.value =await homeController.webViewController!.isSecureContext();
-                  var data2=await homeController.webViewController!.getCertificate();
-                log("is url safe ${homeController.isUrlsafe}");
-                  // log("is url certificates safe $data2");
+                  
+
                   homeController.searchController.text = homeController.url.value;
 
                 // });
@@ -176,7 +175,7 @@ class _BrowserState extends State<Browser> {
                 print(consoleMessage);
               },
             ),
-        
+
           ],
         ),
       ),

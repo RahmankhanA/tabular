@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:tabular/app/modules/home/views/browser.dart';
+import 'package:tabular/app/modules/home/views/url_info_popup.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -26,14 +27,13 @@ class HomeView extends GetView<HomeController> {
             height: controller.progress.value < 1.0 ? 62 : 58,
             child: Column(
               children: [
-
                 Visibility(
-                  visible: controller.progress.value < 1.0,
+                    visible: controller.progress.value < 1.0,
                     child: LinearProgressIndicator(
-                  value: controller.progress.value,
-                  color: const Color.fromARGB(255, 38, 67, 226),
-                  backgroundColor: Colors.black,
-                )),
+                      value: controller.progress.value,
+                      color: const Color.fromARGB(255, 38, 67, 226),
+                      backgroundColor: Colors.black,
+                    )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -69,7 +69,52 @@ class HomeView extends GetView<HomeController> {
                             decoration: InputDecoration(
                                 prefixIcon: InkWell(
                                   onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) => Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.2,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(25.0),
+                                            topRight: Radius.circular(25.0),
+                                          ),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 5),
+                                          child: UrlInfoPopup(
+                                            transitionDuration:
+                                                Duration(milliseconds: 300),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    // Get.bottomSheet(
 
+                                    //   const UrlInfoPopup(
+                                    //   transitionDuration:
+                                    //       Duration(milliseconds: 300),
+                                    // ),
+
+                                    // backgroundColor: Colors.white,
+                                    // );
+                                    // showDialog(
+                                    //   context: context,
+                                    //   builder: (BuildContext context) {
+                                    //     return const AlertDialog(
+                                    //       alignment: Alignment.bottomCenter,
+                                    //       content: UrlInfoPopup(
+                                    //         transitionDuration:
+                                    //             Duration(milliseconds: 300),
+                                    //       ),
+                                    //     );
+                                    //   },
+                                    // );
                                   },
                                   child: Icon(
                                     controller.isUrlsafe.value
