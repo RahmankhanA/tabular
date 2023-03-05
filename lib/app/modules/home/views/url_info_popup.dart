@@ -108,7 +108,7 @@ class _UrlInfoPopupState extends State<UrlInfoPopup> {
                 text: "$text2 ",
               ),
               TextSpan(
-                text: "Details",
+                text: homeController.isUrlsafe.value? "Details":"",
                 style: const TextStyle(color: Colors.blue),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () async {
