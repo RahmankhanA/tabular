@@ -1,16 +1,50 @@
-# tabular
 
-A new Flutter project.
+# Tabular (browser)
 
-## Getting Started
+This is a fully functional browser for andriod and IOS.
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Feature Implemented
+- Cross platform
+- Core browser
+- Page loading progress
+- Pull to refresh functionality
+- Checking that site is safe are not
+- View site certificates if site is safe
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Feature pending
+
+- Collect, Show and Delete  historing
+- Open Multiple Tab and manage them
+- open tab in incognitomode
+- change search engine
+- Manage JavaScript 
+- etc
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/RahmankhanA/tabular
+```
+
+Go to the project directory
+
+```bash
+  cd tabular
+```
+
+Install dependencies
+
+```bash
+  flutter pub get
+```
+
+Run the project
+
+```bash
+  flutter run
+```
+
